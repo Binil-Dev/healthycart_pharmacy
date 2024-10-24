@@ -10,6 +10,7 @@ import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pha
 import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pharmacy_product/widgets/forms_widget/other_add_form.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pharmacy_product/widgets/percentage_container.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
+import 'package:healthycart_pharmacy/utils/constants/image/image.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
@@ -34,7 +35,7 @@ class ProductListWidget extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                  
                   children: [
                     Container(
                       height: 96,
@@ -45,14 +46,14 @@ class ProductListWidget extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child: (pharmacyProvider
-                                .productList[index].productImage!.isNotEmpty)
+                                .productList[index].productImage != null)
                             ? CustomCachedNetworkImage(
                                 image: pharmacyProvider
                                         .productList[index].productImage?[0] ??
                                     '',
                                 fit: BoxFit.contain,
                               )
-                            : const SizedBox(),
+                            : Image.asset(BImage.roundLogo)
                       ),
                     ),
                     Expanded(
@@ -226,8 +227,8 @@ class ProductListWidget extends StatelessWidget {
                                         height: 24,
                                       )
                                     : const SizedBox(
-                                        height: 26,
-                                        width: 74,
+                                        height: 24,
+                                        width: 72,
                                       ),
                                 Row(
                                   children: [
@@ -331,7 +332,7 @@ class ProductListWidget extends StatelessWidget {
                       page: OtherAddFormWidget(
                         typeOfProduct:
                             pharmacyProvider.productList[index].typeOfProduct ??
-                                "Other",
+                                "Others",
                         isEditing: true,
                         productDetails: pharmacyProvider.productList[index],
                         index: index,

@@ -15,8 +15,8 @@ import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
-class DoctorScreen extends StatelessWidget {
-  const DoctorScreen({super.key});
+class PharmacyCategoryScreen extends StatelessWidget {
+  const PharmacyCategoryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

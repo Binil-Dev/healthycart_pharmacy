@@ -7,10 +7,10 @@ import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/pharm
 
 abstract class IOrderFacade {
   Stream<Either<MainFailure, List<PharmacyOrderModel>>> pharmacyNewOrderData({
-    required String pharmacyId,
+    required String pharmacyId,required String? searchPhoneNumber
   });
   Stream<Either<MainFailure, List<PharmacyOrderModel>>> pharmacyOnProcessData({
-    required String pharmacyId,
+    required String pharmacyId,required String? searchPhoneNumber
   });
   Future<void> cancelStream();
   FutureResult<PharmacyOrderModel> updateProductOrderPendingDetails(
@@ -18,10 +18,10 @@ abstract class IOrderFacade {
   FutureResult<PharmacyOrderModel> updateProductOrderOnProcessDetails(
       {required String orderId, required PharmacyOrderModel orderProducts,required String pharmacyId,DayTransactionModel? dayTransactionModel,String? dayTransactionDate,});
   FutureResult<List<PharmacyOrderModel>> getCompletedOrderDetails({
-    required String pharmacyId, required int limit,
+    required String pharmacyId, required int initiallimit,required String? searchPhoneNumber
   });
   FutureResult<List<PharmacyOrderModel>> getCancelledOrderDetails({
-    required String pharmacyId,
+    required String pharmacyId,required String? searchPhoneNumber
   });
   void clearFetchData();
 

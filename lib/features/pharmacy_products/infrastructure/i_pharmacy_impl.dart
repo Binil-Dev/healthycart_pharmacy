@@ -304,61 +304,65 @@ class IPharmacyImpl implements IPharmacyFacade {
 
 /* -------------------------------------------------------------------------- */
 /* -------------- MEDICINE EQUIPMENT AND OTHE FORM AND PACKAGE -------------- */
-  @override
-  FutureResult<MedicineData> getproductFormAndPackageList() async {
-    try {
-      List<String>? medicineForm;
-      List<String>? medicinePackage;
-      List<String>? equipmentType;
-      List<String>? othersCategoryType;
-      List<String>? othersPackage;
-      List<String>? othersForm;
+ @override
+FutureResult<MedicineData> getproductFormAndPackageList() async {
+  try {
+    List<String>? medicineForm;
+    List<String>? medicinePackage;
+    List<String>? equipmentType;
+    List<String>? othersCategoryType;
+    List<String>? othersPackage;
+    List<String>? othersForm;
 
-      await _firebaseFirestore
-          .collection(FirebaseCollections.productsForm)
-          .doc('medicine')
-          .get()
-          .then((value) {
-        var data = value.data() as Map<String, dynamic>;
-        List<dynamic> medicineFormList = data['medicineFormList'];
-        List<dynamic> medicinePackageList = data['medicinePackageList'];
-        List<dynamic> equipmentTypeList = data['equipmentTypeList'];
-        List<dynamic> otherCategoryTypeList = data['otherCategoryTypeList'];
-        List<dynamic> otherProductFormList = data['otherProductFormList'];
-        List<dynamic> otherProductPackageList = data['otherProductPackageList'];
+    await _firebaseFirestore
+        .collection(FirebaseCollections.productsForm)
+        .doc('medicine')
+        .get()
+        .then((value) {
+      var data = value.data() as Map<String, dynamic>;
+      List<dynamic> medicineFormList = data['medicineFormList'] ?? [];
+      List<dynamic> medicinePackageList = data['medicinePackageList'] ?? [];
+      List<dynamic> equipmentTypeList = data['equipmentTypeList'] ?? [];
+      List<dynamic> otherCategoryTypeList = data['otherCategoryTypeList'] ?? [];
+      List<dynamic> otherProductFormList = data['otherProductFormList'] ?? [];
+      List<dynamic> otherProductPackageList = data['otherProductPackageList'] ?? [];
 
-        medicineForm = medicineFormList.map((item) {
-          return item['medicineForm'] as String;
-        }).toList();
-        medicinePackage = medicinePackageList.map((item) {
-          return item['medicinePackage'] as String;
-        }).toList();
-        othersCategoryType = otherCategoryTypeList.map((item) {
-          return item['otherCategoryType'] as String;
-        }).toList();
-        equipmentType = equipmentTypeList.map((item) {
-          return item['equipmentType'] as String;
-        }).toList();
-        othersForm = otherProductFormList.map((item) {
-          return item['otherProductForm'] as String;
-        }).toList();
-        othersPackage = otherProductPackageList.map((item) {
-          return item['otherProductPackage'] as String;
-        }).toList();
-      });
+      // Convert all to lowercase and trim
+      medicineForm = medicineFormList.map((item) {
+        return (item['medicineForm'] as String).trim().toLowerCase();
+      }).toList();
+      medicinePackage = medicinePackageList.map((item) {
+        return (item['medicinePackage'] as String).trim().toLowerCase();
+      }).toList();
+      othersCategoryType = otherCategoryTypeList.map((item) {
+        return (item['otherCategoryType'] as String).trim().toLowerCase();
+      }).toList();
+      equipmentType = equipmentTypeList.map((item) {
+        return (item['equipmentType'] as String).trim().toLowerCase();
+      }).toList();
+      othersForm = otherProductFormList.map((item) {
+        return (item['otherProductForm'] as String).trim().toLowerCase();
+      }).toList();
+      othersPackage = otherProductPackageList.map((item) {
+        return (item['otherProductPackage'] as String).trim().toLowerCase();
+      }).toList();
+    });
 
-      return right(MedicineData(
-        equipmentType: equipmentType ?? [],
-        othersCategoryType: othersCategoryType ?? [],
-        othersPackage: othersPackage ?? [],
-        othersForm: othersForm ?? [],
-        medicineForm: medicineForm ?? [],
-        medicinePackage: medicinePackage ?? [],
-      ));
-    } catch (e) {
-      return left(MainFailure.generalException(errMsg: e.toString()));
-    }
+    return right(MedicineData(
+      equipmentType: equipmentType ?? [],
+      othersCategoryType: othersCategoryType ?? [],
+      othersPackage: othersPackage ?? [],
+      othersForm: othersForm ?? [],
+      medicineForm: medicineForm ?? [],
+      medicinePackage: medicinePackage ?? [],
+    ));
+  } on FirebaseException catch (e) {
+    return left(MainFailure.firebaseException(errMsg: e.toString()));
+  } catch (e) {
+    return left(MainFailure.generalException(errMsg: e.toString()));
   }
+}
+
 
 /* -------------------------------------------------------------------------- */
   @override

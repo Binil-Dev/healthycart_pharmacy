@@ -10,4 +10,5 @@ class FirebaseCollections {
   static String transactionCollection = 'pharmacy_transactions';
   static String transactionSubCollection = 'pharmacy_transfers';
   static String dayTransaction = 'dayTransaction';
+   static String general = 'general';
 }

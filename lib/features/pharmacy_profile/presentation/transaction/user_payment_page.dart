@@ -25,7 +25,7 @@ class _UserPaymentState extends State<UserPayment> {
       (_) {
         orderProvider
           ..clearCompletedOrderFetchData()
-          ..getCompletedOrderDetails(limit: 20);
+          ..getCompletedOrderDetails(limit: 15);
       },
     );
     _scrollcontroller.addListener(() {

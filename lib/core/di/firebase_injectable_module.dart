@@ -22,7 +22,6 @@ abstract class FirebaseInjecatbleModule {
 
   @lazySingleton
   FirebaseFirestore get repo => FirebaseFirestore.instance;
-
 }
 
 class FirebaseService {

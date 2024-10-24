@@ -56,18 +56,11 @@ class CustomToast {
         color: Colors.green[500],
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          //message
-          Flexible(
-            child: Text(text,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    color: BColors.white, fontWeight: FontWeight.w500)),
-          ),
-        ],
+      child: Flexible(
+        child: Text(text,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+                color: BColors.white, fontWeight: FontWeight.w500)),
       ),
     );
 
@@ -90,17 +83,10 @@ class CustomToast {
         color: Colors.red[600],
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          //message
-          Text(text,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: BColors.white, fontWeight: FontWeight.w500)),
-        ],
-      ),
+      child: Text(text,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+              color: BColors.white, fontWeight: FontWeight.w500)),
     );
 
     ftoast.showToast(

@@ -125,16 +125,23 @@ class RequestPharmacyProvider extends ChangeNotifier {
   }
 
 /* ------------------------ PRODUCT NEW ORDER STREAM SECTION ----------------------- */
-  void getPharmacyNewOrders() {
+  final TextEditingController searchNewRequestController =
+      TextEditingController();
+  void getPharmacyNewOrders({
+    String? searchPhoneNumber,
+  }) {
     String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchloading = true;
     notifyListeners();
     _iOrderFacade
-        .pharmacyNewOrderData(pharmacyId: pharmacyId ?? '')
+        .pharmacyNewOrderData(
+            pharmacyId: pharmacyId ?? '',
+            searchPhoneNumber: searchNewRequestController.text)
         .listen((event) {
       event.fold(
         (err) {
           CustomToast.errorToast(text: err.errMsg);
+          log(err.errMsg);
           fetchloading = false;
           notifyListeners();
         },
@@ -155,15 +162,21 @@ class RequestPharmacyProvider extends ChangeNotifier {
 /* -------------------------------------------------------------------------- */
 
 /* ------------------------ PRODUCT ON PROCESS ORDER STREAM SECTION ----------------------- */
-  void getpharmacyOnProcessData() {
+  final TextEditingController searchAcceptedBookingsController =
+      TextEditingController();
+  void getpharmacyOnProcessData({
+    String? searchPhoneNumber,
+  }) {
     String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchloading = true;
     notifyListeners();
     _iOrderFacade
-        .pharmacyOnProcessData(pharmacyId: pharmacyId ?? '')
+        .pharmacyOnProcessData(
+            pharmacyId: pharmacyId ?? '', searchPhoneNumber: searchPhoneNumber)
         .listen((event) {
       event.fold(
         (err) {
+           log(err.errMsg);
           CustomToast.errorToast(text: err.errMsg);
           fetchloading = false;
           notifyListeners();
@@ -387,14 +400,20 @@ class RequestPharmacyProvider extends ChangeNotifier {
   num calculateOrderCommission(num finalAmount) {
     return (finalAmount * pharmacyTransactionModel!.commission!) / 100;
   }
-/* -----------------------------GET COMPLETED ORDER ---------------------------- */
 
-  Future<void> getCompletedOrderDetails({required int limit}) async {
+/* -----------------------------GET COMPLETED ORDER ---------------------------- */
+  final TextEditingController searchCompletedBookingsController =
+      TextEditingController();
+  Future<void> getCompletedOrderDetails({
+    required int limit,
+  }) async {
     String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchloading = true;
     notifyListeners();
     final result = await _iOrderFacade.getCompletedOrderDetails(
-        pharmacyId: pharmacyId ?? '', limit: limit);
+        pharmacyId: pharmacyId ?? '',
+        initiallimit: limit,
+        searchPhoneNumber: searchCompletedBookingsController.text);
     result.fold((failure) {
       CustomToast.errorToast(text: "Couldn't able to get completed orders");
     }, (completedOrders) {
@@ -411,15 +430,25 @@ class RequestPharmacyProvider extends ChangeNotifier {
     _iOrderFacade.clearFetchData();
   }
 
+  void searchCompletedOrders() {
+    completedOrderList.clear();
+    _iOrderFacade.clearFetchData();
+    getCompletedOrderDetails(limit: 5);
+    notifyListeners();
+  }
+
 /* ------------------------- CANCELLED ORDER SECTION ------------------------ */
+  final TextEditingController searchCancelledOrdersController =
+      TextEditingController();
   Future<void> getCancelledOrderDetails() async {
     String? pharmacyId = FirebaseAuth.instance.currentUser?.uid;
     fetchloading = true;
     notifyListeners();
     final result = await _iOrderFacade.getCancelledOrderDetails(
-      pharmacyId: pharmacyId ?? '',
-    );
+        pharmacyId: pharmacyId ?? '',
+        searchPhoneNumber: searchCancelledOrdersController.text);
     result.fold((failure) {
+       log(failure.errMsg);
       CustomToast.errorToast(text: "Couldn't able to get completed orders");
     }, (cancelledOrders) {
       log(cancelledOrders.length.toString());
@@ -433,6 +462,13 @@ class RequestPharmacyProvider extends ChangeNotifier {
   void clearCancelledOrderFetchData() {
     cancelledOrderList.clear();
     _iOrderFacade.clearFetchData();
+  }
+
+  void searchCancelledOrders() {
+    cancelledOrderList.clear();
+    _iOrderFacade.clearFetchData();
+    getCancelledOrderDetails();
+    notifyListeners();
   }
 
 /* --------------------- ORDER COMPLETION STATUS UPDATE --------------------- */

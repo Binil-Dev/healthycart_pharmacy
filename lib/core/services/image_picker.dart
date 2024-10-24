@@ -26,7 +26,7 @@ class ImageService {
       }
     } catch (e) {
       return left(
-          const MainFailure.generalException(errMsg: 'Image is not picked'));
+          const MainFailure.generalException(errMsg: 'Image is not picked'),);
     }
   }
 
@@ -66,6 +66,7 @@ class ImageService {
   }) async {
     if (imageUrl == null) {
       return left(const MainFailure.generalException(
+        
           errMsg: "Can't able to remove image."));
     }
     final imageRef = _storage.refFromURL(imageUrl);

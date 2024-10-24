@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -5,10 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:healthycart_pharmacy/core/custom/toast/toast.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/add_pharmacy_form_page/domain/model/pharmacy_model.dart';
+import 'package:healthycart_pharmacy/features/add_pharmacy_form_page/presentation/pharmacy_form.dart';
 import 'package:healthycart_pharmacy/features/authenthication/domain/i_auth_facade.dart';
 import 'package:healthycart_pharmacy/features/authenthication/presentation/otp_ui.dart';
 import 'package:healthycart_pharmacy/features/home/presentation/home.dart';
-import 'package:healthycart_pharmacy/features/add_pharmacy_form_page/presentation/pharmacy_form.dart';
 import 'package:healthycart_pharmacy/features/location_picker/presentation/location.dart';
 import 'package:healthycart_pharmacy/features/pending_page/presentation/pending_page.dart';
 import 'package:healthycart_pharmacy/features/splash_screen/splash_screen.dart';
@@ -32,22 +33,25 @@ class AuthenticationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool pharmacyStreamFetchedData({required String pharmacyId}) {
-    bool result = false;
-    iAuthFacade.pharmacyStreamFetchedData(pharmacyId).listen((event) {
-      event.fold((failure) {
-        result = false;
-      }, (snapshot) {
-        pharmacyDataFetched = snapshot;
-        isRequsetedPendingPage = snapshot.pharmacyRequested;
-        result = true;
-        notifyListeners();
-      });
+  Future<void> pharmacyStreamFetchedData() async {
+    final completer = Completer<void>();
+    final result = iAuthFacade.pharmacyStreamFetchedData();
+    result.listen((event) {
+      pharmacyDataFetched = event;
+      isRequsetedPendingPage = event?.pharmacyRequested;
+      notifyListeners();
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
+    }, onError: (error) {
+      if (!completer.isCompleted) {
+        completer.completeError(error);
+      }
     });
-    return result;
+    await completer.future;
   }
 
-  void navigationHospitalFuction({required BuildContext context}) async {
+  void navigationPharmacyFuction({required BuildContext context}) async {
     if (pharmacyDataFetched?.pharmacyAddress == null ||
         pharmacyDataFetched?.pharmacyImage == null ||
         pharmacyDataFetched?.pharmacyName == null ||
@@ -87,22 +91,22 @@ class AuthenticationProvider extends ChangeNotifier {
     }
   }
 
-  void verifyPhoneNumber({required BuildContext context, required bool resend}) {
+  void verifyPhoneNumber(
+      {required BuildContext context, required bool resend}) {
     iAuthFacade.verifyPhoneNumber(phoneNumber!).listen((result) {
       result.fold((failure) {
         Navigator.pop(context);
         CustomToast.errorToast(text: failure.errMsg);
       }, (isVerified) {
         Navigator.pop(context);
-        if(resend == false){
-           EasyNavigation.push(
-            type: PageTransitionType.rightToLeft,
-            context: context,
-            page: OTPScreen(
-              phoneNumber: phoneNumber ?? 'No Number',
-            ));
+        if (resend == false) {
+          EasyNavigation.push(
+              type: PageTransitionType.rightToLeft,
+              context: context,
+              page: OTPScreen(
+                phoneNumber: phoneNumber ?? 'No Number',
+              ));
         }
-        
       });
     });
   }

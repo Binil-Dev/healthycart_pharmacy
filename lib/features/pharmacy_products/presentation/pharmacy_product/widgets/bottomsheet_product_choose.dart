@@ -73,11 +73,11 @@ class ChooseProductBottomSheet extends StatelessWidget {
                     EasyNavigation.push(
                         context: context,
                         page: const OtherAddFormWidget(
-                          typeOfProduct: "Other's",
+                          typeOfProduct: "Others",
                           isEditing: false,
                         ));
                   },
-                  text: "Other",
+                  text: "Others",
                   icon: Icons.shopping_bag_rounded,
                   iconColor: BColors.mainlightColor,
                 ),

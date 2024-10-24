@@ -16,13 +16,13 @@ class PharmacyProductAddModel {
   final int? productFormNumber;
   final int? productPackageNumber;
   final int? productMeasurementNumber;
-  final double? equipmentWarrantyNumber;
-   final String? storingDegree;
+  final num? equipmentWarrantyNumber;
+  final String? storingDegree;
   final String? idealFor;
   final Timestamp? expiryDate;
   final Timestamp? createdAt;
   final String? productForm;
- final String? productMeasurement;
+  final String? productMeasurement;
   final String? productInformation;
   final String? keyIngrdients;
   final String? directionToUse;
@@ -90,7 +90,7 @@ class PharmacyProductAddModel {
     int? productFormNumber,
     int? productPackageNumber,
     int? productMeasurementNumber,
-    double? equipmentWarrantyNumber,
+    num? equipmentWarrantyNumber,
     String? storingDegree,
     String? idealFor,
     Timestamp? expiryDate,
@@ -295,7 +295,6 @@ class PharmacyProductAddModel {
       'productFormNumber': productFormNumber,
       'productPackageNumber': productPackageNumber,
       'productMeasurementNumber': productMeasurementNumber,
-      'storingDegree': storingDegree,
       'idealFor': idealFor,
       'expiryDate': expiryDate,
       'createdAt': createdAt,
@@ -348,7 +347,7 @@ class PharmacyProductAddModel {
          productMeasurementNumber:
           map['productMeasurementNumber'] != null ? map['productMeasurementNumber'] as int : null,
          equipmentWarrantyNumber:
-          map['equipmentWarrantyNumber'] != null ? map['equipmentWarrantyNumber'] as double : null,           
+          map['equipmentWarrantyNumber'] != null ? map['equipmentWarrantyNumber'] as num : null,           
       storingDegree:
           map['storingDegree'] != null ? map['storingDegree'] as String : null,
       idealFor:

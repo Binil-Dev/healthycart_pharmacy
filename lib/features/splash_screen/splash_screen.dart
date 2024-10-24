@@ -1,10 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:gap/gap.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
 import 'package:healthycart_pharmacy/features/authenthication/presentation/login_ui.dart';
+import 'package:healthycart_pharmacy/features/general/presentation/provider/general_provider.dart';
 import 'package:healthycart_pharmacy/utils/constants/image/image.dart';
 import 'package:provider/provider.dart';
 
@@ -19,24 +19,27 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     context.read<AuthenticationProvider>().notificationPermission();
-    final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (pharmacyId != null) {
-        context
-            .read<AuthenticationProvider>()
-            .pharmacyStreamFetchedData(pharmacyId: pharmacyId);
-      }
+    final authProvider = context.read<AuthenticationProvider>();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await context.read<GeneralProvider>().fetchData();
+
+         authProvider.pharmacyStreamFetchedData()
+          .whenComplete(
+        () {
+          Future.delayed(const Duration(seconds: 4), () {
+          
+            if (authProvider.pharmacyDataFetched == null) {
+              EasyNavigation.pushReplacement(
+                  context: context, page: const LoginScreen());
+            } else {
+              
+                authProvider.navigationPharmacyFuction(context: context);
+            }
+          });
+        },
+      );
     });
-    Future.delayed(const Duration(seconds: 5)).then((value) {
-      if (pharmacyId == null) {
-        EasyNavigation.pushReplacement(
-            context: context, page: const LoginScreen());
-      } else {
-        context
-            .read<AuthenticationProvider>()
-            .navigationHospitalFuction(context: context);
-      }
-    });
+
     super.initState();
   }
 

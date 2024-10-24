@@ -355,12 +355,7 @@ class PharmacyProvider extends ChangeNotifier {
   ];
   /* -------------------------------------------------------------------------- */
   // getting from the admin side
-  List<String> medicineFormList = [];
-  List<String> medicinePackageList = [];
-  List<String> equipmentTypeList = [];
-  List<String> othersCategoryTypeList = [];
-  List<String> othersPackageList = [];
-  List<String> othersFormList = [];
+
   /* -------------------------------------------------------------------------- */
 
   String? productForm;
@@ -400,7 +395,13 @@ class PharmacyProvider extends ChangeNotifier {
     idealFor = text;
     notifyListeners();
   }
-
+  /* -------------------------------------------------------------------------- */
+  List<String> medicineFormList = [];
+  List<String> medicinePackageList = [];
+  List<String> equipmentTypeList = [];
+  List<String> othersCategoryTypeList = [];
+  List<String> othersPackageList = [];
+  List<String> othersFormList = [];
 // getting the two list The package  and form of medicine
   MedicineData? productFormAndPackage;
   Future<void> getproductFormAndPackageList() async {
@@ -413,6 +414,7 @@ class PharmacyProvider extends ChangeNotifier {
         othersFormList.isNotEmpty) return;
     await _iPharmacyFacade.getproductFormAndPackageList().then((value) {
       value.fold((failure) {
+        log('ERROR PRODUCT FORM GOT::: ${failure.errMsg}');
         CustomToast.errorToast(text: failure.errMsg);
       }, (data) {
         log('CALLED PRODUCT FORM GOT:::');
@@ -604,7 +606,7 @@ class PharmacyProvider extends ChangeNotifier {
       productMeasurementNumber: int.parse(measurementUnitNumberController.text),
       productMeasurement: productMeasurementUnit,
       equipmentWarranty: selectedWarantyOption,
-      equipmentWarrantyNumber: double.tryParse(productWarrantyController.text),
+      equipmentWarrantyNumber: num.tryParse(productWarrantyController.text),
       productInformation: productInformationController.text,
       directionToUse: directionToUseController.text,
       safetyInformation: safetyInformationController.text,
@@ -616,7 +618,7 @@ class PharmacyProvider extends ChangeNotifier {
     );
   }
 
-  /// III.) other's  section to add
+  /// III.) others  section to add
 
   PharmacyProductAddModel? otherData;
   Future<void> addPharmacyOthersDetails({
@@ -980,7 +982,7 @@ class PharmacyProvider extends ChangeNotifier {
       productMeasurementNumber: int.parse(measurementUnitNumberController.text),
       productMeasurement: productMeasurementUnit,
       equipmentWarranty: selectedWarantyOption,
-      equipmentWarrantyNumber: double.tryParse(productWarrantyController.text),
+      equipmentWarrantyNumber: num.tryParse(productWarrantyController.text),
       productInformation: productInformationController.text,
       directionToUse: directionToUseController.text,
       safetyInformation: safetyInformationController.text,

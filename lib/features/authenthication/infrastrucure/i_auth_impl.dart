@@ -1,13 +1,14 @@
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:healthycart_pharmacy/core/failures/main_failure.dart';
 import 'package:healthycart_pharmacy/core/general/firebase_collection.dart';
 import 'package:healthycart_pharmacy/features/add_pharmacy_form_page/domain/model/pharmacy_model.dart';
 import 'package:healthycart_pharmacy/features/authenthication/domain/i_auth_facade.dart';
 import 'package:injectable/injectable.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 @LazySingleton(as: IAuthFacade)
 class IAuthImpl implements IAuthFacade {
@@ -104,31 +105,56 @@ class IAuthImpl implements IAuthFacade {
     }
   }
 
+  // @override
+  // Stream<Either<MainFailure, PharmacyModel>>
+  //     pharmacyStreamFetchedData() async* {
+  //   final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+  //   log(pharmacyId.toString());
+  //   final StreamController<Either<MainFailure, PharmacyModel>>
+  //       pharmacyStreamController =
+  //       StreamController<Either<MainFailure, PharmacyModel>>();
+  //   try {
+  //     _streamSubscription = _firestore
+  //         .collection(FirebaseCollections.pharmacy)
+  //         .doc(pharmacyId)
+  //         .snapshots()
+  //         .listen((doc) {
+  //       if (doc.exists) {
+  //         pharmacyStreamController.add(
+  //             right(PharmacyModel.fromMap(doc.data() as Map<String, dynamic>)));
+  //       }
+  //     });
+  //   } on FirebaseException catch (e) {
+  //     pharmacyStreamController
+  //         .add(left(MainFailure.firebaseException(errMsg: e.code)));
+  //   } catch (e) {
+  //     pharmacyStreamController
+  //         .add(left(MainFailure.generalException(errMsg: e.toString())));
+  //   }
+  //   yield* pharmacyStreamController.stream;
+  // }
+
   @override
-  Stream<Either<MainFailure, PharmacyModel>> pharmacyStreamFetchedData(
-      String pharmacyId) async* {
-    final StreamController<Either<MainFailure, PharmacyModel>>
-        pharmacyStreamController =
-        StreamController<Either<MainFailure, PharmacyModel>>();
-    try {
-      _streamSubscription = _firestore
-          .collection(FirebaseCollections.pharmacy)
-          .doc(pharmacyId)
-          .snapshots()
-          .listen((doc) {
-        if (doc.exists) {
-          pharmacyStreamController.add(
-              right(PharmacyModel.fromMap(doc.data() as Map<String, dynamic>)));
-        }
-      });
-    } on FirebaseException catch (e) {
-      pharmacyStreamController
-          .add(left(MainFailure.firebaseException(errMsg: e.code)));
-    } catch (e) {
-      pharmacyStreamController
-          .add(left(MainFailure.generalException(errMsg: e.toString())));
+  Stream<PharmacyModel?> pharmacyStreamFetchedData() async* {
+    final pharmacyId = FirebaseAuth.instance.currentUser?.uid;
+    if (pharmacyId == null) {
+      yield null;
+      return;
     }
-    yield* pharmacyStreamController.stream;
+    final snapshot = _firestore
+        .collection(FirebaseCollections.pharmacy)
+        .doc(pharmacyId)
+        .snapshots();
+    final pharmacy = snapshot.map(
+      (event) {
+        if (event.exists) {
+          return (PharmacyModel.fromMap(event.data() as Map<String, dynamic>));
+        } else {
+          return null;
+        }
+      },
+    );
+    yield* pharmacy;
   }
 
   @override

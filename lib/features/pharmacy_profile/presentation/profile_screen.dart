@@ -5,6 +5,7 @@ import 'package:healthycart_pharmacy/core/custom/custom_alertbox/confirm_alertbo
 import 'package:healthycart_pharmacy/core/custom/lottie/loading_lottie.dart';
 import 'package:healthycart_pharmacy/core/services/easy_navigation.dart';
 import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
+import 'package:healthycart_pharmacy/features/bulk_product_upload.dart/presentation/bpu_category.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/application/profile_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/product_list_profile/product_list.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/transaction/payment_history_tab.dart';
@@ -93,10 +94,25 @@ class ProfileScreen extends StatelessWidget {
                       onTap: () {},
                     ),
                   ),
+                     const Gap(4),
+                  GestureDetector(
+                    onTap: () {
+                       EasyNavigation.push(
+                          context: context,
+                          type: PageTransitionType.rightToLeft,
+                          page: const BPUCategoryScreen(),);
+                    },
+                    child: const ProfileMainContainer(
+                        text: 'Bulk Product Upload',
+                        sideChild: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(Icons.arrow_forward_ios),
+                        )),
+                  ),
                   const Gap(4),
                   GestureDetector(
                     onTap: () {
-                      EasyNavigation.push(
+                     EasyNavigation.push(
                           context: context,
                           type: PageTransitionType.rightToLeft,
                           page: const PharmacyProfileProductList());
@@ -123,6 +139,7 @@ class ProfileScreen extends StatelessWidget {
                           child: Icon(Icons.arrow_forward_ios),
                         )),
                   ),
+                 
                    const Gap(4),
                   GestureDetector(
                     onTap: () {
@@ -139,9 +156,10 @@ class ProfileScreen extends StatelessWidget {
                         text: 'Contact Us',
                         sideChild: Padding(
                           padding: EdgeInsets.all(8.0),
-                          child: Icon(Icons.call),
+                          child: Icon(Icons.arrow_forward_ios),
                         )),
                   ),
+
                   const Gap(4),
                   GestureDetector(
                     onTap: () {

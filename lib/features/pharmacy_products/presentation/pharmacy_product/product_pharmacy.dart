@@ -11,6 +11,7 @@ import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pha
 import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/pharmacy_product/widgets/list_product_view.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
 import 'package:provider/provider.dart';
+
 import '../../../../core/custom/app_bar/sliver_appbar.dart';
 
 class PharmacyProductScreen extends StatefulWidget {
@@ -29,7 +30,6 @@ class _PharmacyProductScreenState extends State<PharmacyProductScreen> {
       pharmacyProvider.getproductFormAndPackageList();
       pharmacyProvider.clearFetchData();
       pharmacyProvider.getPharmacyProductDetails();
-
     });
 
     _scrollcontroller.addListener(() {
@@ -51,131 +51,134 @@ class _PharmacyProductScreenState extends State<PharmacyProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body:
-            Consumer<PharmacyProvider>(builder: (context, pharmacyProvider, _) {
-          return PopScope(
-            onPopInvoked: (didPop) {
-                 pharmacyProvider.clearPackageAndFormDetails();
-                 
-            },
-            child: CustomScrollView(
-              controller: _scrollcontroller,
-              slivers: [
-                SliverCustomAppbar(
-                  title: pharmacyProvider.selectedCategoryText ?? 'Product List',
-                  onBackTap: () {
-                    EasyNavigation.pop(context: context);
-                  },
-                  child: PreferredSize(
-                    preferredSize: const Size(double.infinity, 68),
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16, right: 16, bottom: 8, top: 4),
-                      child: SearchTextFieldButton(
-                        text: "Search products...",
-                        controller: pharmacyProvider.searchController,
-                        onChanged: (value) {
-                          EasyDebounce.debounce(
-                              'searchproduct', const Duration(milliseconds: 500),
-                              () {
-                            pharmacyProvider.searchProduct(value);
-                          });
-                        },
+    return  Consumer<PharmacyProvider>(builder: (context, pharmacyProvider, _) {
+        return Scaffold(
+          body:  PopScope(
+              onPopInvoked: (didPop) {
+                pharmacyProvider.clearPackageAndFormDetails();
+              },
+              child: CustomScrollView(
+                controller: _scrollcontroller,
+                slivers: [
+                  SliverCustomAppbar(
+                    title: pharmacyProvider.selectedCategoryText ?? 'Product List',
+                    onBackTap: () {
+                      EasyNavigation.pop(context: context);
+                    },
+                    child: PreferredSize(
+                      preferredSize: const Size(double.infinity, 68),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 16, right: 16, bottom: 8, top: 4),
+                        child: SearchTextFieldButton(
+                          text: "Search products...",
+                          controller: pharmacyProvider.searchController,
+                          onChanged: (value) {
+                            EasyDebounce.debounce(
+                                'searchproduct', const Duration(milliseconds: 500),
+                                () {
+                              pharmacyProvider.searchProduct(value);
+                            });
+                          },
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 16, bottom: 8, left: 16, right: 16),
-                    child: Text(
-                      "Products List",
-                      style: Theme.of(context).textTheme.bodyLarge,
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                          top: 16, bottom: 8, left: 16, right: 16),
+                      child: Text(
+                        "Products List",
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
                     ),
                   ),
-                ),
-                (pharmacyProvider.fetchLoading &&
-                        pharmacyProvider.productList.isEmpty)
-            
-                    /// loading is done here
-                    ? const SliverFillRemaining(
-                        child: Center(
-                          child: LoadingIndicater(),
-                        ),
-                      )
-                    : (pharmacyProvider.productList.isEmpty)
-                        ? const ErrorOrNoDataPage(
-                            text: "No Products added in this category.",
-                          )
-                        : SliverPadding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            sliver: SliverList.builder(
-                              itemCount: pharmacyProvider.productList.length,
-                              itemBuilder: (context, index) {
-                                return ProductListWidget(
-                                  index: index,
-                                );
-                              },
-                            ),
+                  (pharmacyProvider.fetchLoading &&
+                          pharmacyProvider.productList.isEmpty)
+        
+                      /// loading is done here
+                      ? const SliverFillRemaining(
+                          child: Center(
+                            child: LoadingIndicater(),
                           ),
-                          const SliverGap(80),
-                SliverToBoxAdapter(
-                    child: (pharmacyProvider.fetchLoading == true &&
-                            pharmacyProvider.productList.isNotEmpty)
-                        ? const Center(child: LoadingIndicater())
-                        : null),
-              ],
-            ),
-          );
-        }),
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.only(
-            bottom: 24,
-          ),
-          child: SizedBox(
-            width: 136,
-            child: FloatingActionButton(
-              elevation: 10,
-              tooltip: 'Add new product',
-              clipBehavior: Clip.antiAlias,
-              isExtended: true,
-              backgroundColor: BColors.darkblue,
-              onPressed: () {
-                showModalBottomSheet(
-                    showDragHandle: true,
-                    elevation: 10,
-                    backgroundColor: Colors.white,
-                    context: context,
-                    builder: (context) {
-                      return const ChooseProductBottomSheet();
-                    });
-              },
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12.0),
+                        )
+                      : (pharmacyProvider.productList.isEmpty)
+                          ? const ErrorOrNoDataPage(
+                              text: "No Products added in this category.",
+                            )
+                          : SliverPadding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 8),
+                              sliver: SliverList.builder(
+                                itemCount: pharmacyProvider.productList.length,
+                                itemBuilder: (context, index) {
+                                  return ProductListWidget(
+                                    index: index,
+                                  );
+                                },
+                              ),
+                            ),
+                  const SliverGap(80),
+                  SliverToBoxAdapter(
+                      child: (pharmacyProvider.fetchLoading == true &&
+                              pharmacyProvider.productList.isNotEmpty)
+                          ? const Center(child: LoadingIndicater())
+                          : null),
+                ],
               ),
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  children: [
-                    Text('Add New',
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelMedium!
-                            .copyWith(fontSize: 14, color: BColors.white)),
-                    const Gap(8),
-                    const Icon(
-                      Icons.assignment_add,
-                      color: BColors.white,
-                    ),
-                  ],
+            ),
+          
+          floatingActionButton: Padding(
+            padding: const EdgeInsets.only(
+              bottom: 48,
+            ),
+            child: SizedBox(
+              width: 136,
+              child: FloatingActionButton(
+                elevation: 10,
+                tooltip: 'Add new product',
+                clipBehavior: Clip.antiAlias,
+                isExtended: true,
+                backgroundColor: BColors.darkblue,
+                onPressed: () {
+                  showModalBottomSheet(
+                      showDragHandle: true,
+                      elevation: 10,
+                      backgroundColor: Colors.white,
+                      context: context,
+                      builder: (context) {
+                        return const ChooseProductBottomSheet();
+                      });
+                },
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: Row(
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        child: Text('Add New',
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelMedium!
+                                .copyWith(fontSize: 14, color: BColors.white)),
+                      ),
+                      const Gap(4),
+                      const Icon(
+                        Icons.assignment_add,
+                        color: BColors.white,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ));
+        );
+      }
+    );
   }
 }

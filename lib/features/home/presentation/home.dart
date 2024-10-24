@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:healthycart_pharmacy/core/custom/bottom_navigation/bottom_nav_widget.dart';
 import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_banner/presentation/banner_page.dart';
-import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/product_category/medicine_category.dart';
+import 'package:healthycart_pharmacy/features/pharmacy_products/presentation/product_category/product_category.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/presentation/profile_screen.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/presentation/request_page.dart';
 import 'package:healthycart_pharmacy/utils/constants/image/icon.dart';
@@ -25,7 +25,7 @@ class HomeScreen extends StatelessWidget {
         text4: 'Profile',
         tabItems: const [
           RequestScreen(),
-          DoctorScreen(),
+          PharmacyCategoryScreen(),
           BannerScreen(),
           ProfileScreen(),
         ],

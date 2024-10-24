@@ -4,6 +4,9 @@ import 'package:healthycart_pharmacy/core/di/injection.dart';
 import 'package:healthycart_pharmacy/core/services/foreground_notification.dart';
 import 'package:healthycart_pharmacy/features/add_pharmacy_form_page/application/pharmacy_form_provider.dart';
 import 'package:healthycart_pharmacy/features/authenthication/application/authenication_provider.dart';
+import 'package:healthycart_pharmacy/features/bulk_product_upload.dart/application/bpu_provider.dart';
+import 'package:healthycart_pharmacy/features/general/data/i_general_facade.dart';
+import 'package:healthycart_pharmacy/features/general/presentation/provider/general_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_banner/application/add_banner_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_products/application/pharmacy_provider.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_profile/application/profile_provider.dart';
@@ -17,9 +20,7 @@ import 'package:provider/provider.dart';
 
 class App extends StatefulWidget {
   const App(
-      {super.key,
-      required this.androidNotificationChannel,
-      required this.flutterLocalNotificationsPlugin});
+      {super.key,required this.androidNotificationChannel,required this.flutterLocalNotificationsPlugin});
   final AndroidNotificationChannel androidNotificationChannel;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
@@ -32,8 +33,7 @@ class _AppState extends State<App> {
   void initState() {
     ForegroundNotificationService.foregroundNotitficationInit(
         channel: widget.androidNotificationChannel,
-        flutterLocalNotificationsPlugin:
-            widget.flutterLocalNotificationsPlugin);
+        flutterLocalNotificationsPlugin: widget.flutterLocalNotificationsPlugin);
     super.initState();
   }
 
@@ -65,6 +65,11 @@ class _AppState extends State<App> {
         ChangeNotifierProvider(
           create: (context) => sl<ProfileProvider>(),
         ),
+        ChangeNotifierProvider(
+          create: (context) => sl<BPUProvider>(),
+        ),
+      ChangeNotifierProvider(
+          create: (context) => GeneralProvider(sl<IGeneralFacade>()),)
       ],
       child: MaterialApp(
           builder: (context, child) => Overlay(
@@ -81,7 +86,8 @@ class _AppState extends State<App> {
           themeMode: ThemeMode.light,
           theme: BAppTheme.lightTheme,
           darkTheme: BAppTheme.darkTheme,
-          home: const SplashScreen()),
+          home: const SplashScreen(),
+          ),
     );
   }
 }

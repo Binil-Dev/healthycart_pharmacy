@@ -21,26 +21,29 @@ class IOrderImpl implements IOrderFacade {
   final NetworkTimeService _networkTimeService;
   late StreamSubscription _streamSubscription;
   @override
-  Stream<Either<MainFailure, List<PharmacyOrderModel>>> pharmacyNewOrderData({
-    required String pharmacyId,
-  }) async* {
+  Stream<Either<MainFailure, List<PharmacyOrderModel>>> pharmacyNewOrderData(
+      {required String pharmacyId, required String? searchPhoneNumber}) async* {
     final StreamController<Either<MainFailure, List<PharmacyOrderModel>>>
         newOrderStreamController =
         StreamController<Either<MainFailure, List<PharmacyOrderModel>>>();
     try {
-      _streamSubscription = _firebaseFirestore
+        Query query = _firebaseFirestore
           .collection(FirebaseCollections.pharmacyOrder)
           .orderBy('createdAt', descending: true)
           .where(Filter.and(
             Filter('pharmacyId', isEqualTo: pharmacyId),
             Filter('orderStatus', isEqualTo: 0),
-          ))
+          ));
+      if (searchPhoneNumber != null && searchPhoneNumber.isNotEmpty) {
+        query = query.where('userDetails.phoneNo', isEqualTo: searchPhoneNumber);
+      }
+      _streamSubscription = query
           .snapshots()
           .listen(
         (docsList) {
           final newOrderList = docsList.docs
               .map((e) =>
-                  PharmacyOrderModel.fromMap(e.data()).copyWith(id: e.id))
+                  PharmacyOrderModel.fromMap(e.data() as Map<String, dynamic>).copyWith(id: e.id))
               .toList();
           log('Data fetched::');
           newOrderStreamController.add(right(newOrderList));
@@ -63,26 +66,29 @@ class IOrderImpl implements IOrderFacade {
 
   /* ---------------------------- ON PROCESS ORDER ---------------------------- */
   @override
-  Stream<Either<MainFailure, List<PharmacyOrderModel>>> pharmacyOnProcessData({
-    required String pharmacyId,
-  }) async* {
+  Stream<Either<MainFailure, List<PharmacyOrderModel>>> pharmacyOnProcessData(
+      {required String pharmacyId, required String? searchPhoneNumber}) async* {
     final StreamController<Either<MainFailure, List<PharmacyOrderModel>>>
         onProcessController =
         StreamController<Either<MainFailure, List<PharmacyOrderModel>>>();
     try {
-      _streamSubscription = _firebaseFirestore
+      Query query = _firebaseFirestore
           .collection(FirebaseCollections.pharmacyOrder)
-          .orderBy('createdAt', descending: true)
+          .orderBy('acceptedAt', descending: true)
           .where(Filter.and(
             Filter('pharmacyId', isEqualTo: pharmacyId),
             Filter('orderStatus', isEqualTo: 1),
-          ))
+          ));
+      if (searchPhoneNumber != null && searchPhoneNumber.isNotEmpty) {
+        query = query.where('userDetails.phoneNo', isEqualTo: searchPhoneNumber);
+      }
+      _streamSubscription = query
           .snapshots()
           .listen(
         (docsList) {
           final newOrderList = docsList.docs
               .map((e) =>
-                  PharmacyOrderModel.fromMap(e.data()).copyWith(id: e.id))
+                  PharmacyOrderModel.fromMap(e.data()as Map<String, dynamic>).copyWith(id: e.id ))
               .toList();
           onProcessController.add(right(newOrderList));
         },
@@ -127,7 +133,7 @@ class IOrderImpl implements IOrderFacade {
     String? dayTransactionDate,
   }) async {
     try {
-      /* ------------------------------ ACCEPT ORDER AND PACKING AND DELIVERY ------------------------------ */ 
+      /* ------------------------------ ACCEPT ORDER AND PACKING AND DELIVERY ------------------------------ */
       if (orderProducts.orderStatus != 2) {
         await _firebaseFirestore
             .collection(FirebaseCollections.pharmacyOrder)
@@ -156,17 +162,21 @@ class IOrderImpl implements IOrderFacade {
 
         batch.update(orderDoc, orderProducts.toMap());
         batch.update(transactionDoc, {
-          'totalTransactionAmt':FieldValue.increment(orderProducts.finalAmount!),
-           'totalCommissionPending': FieldValue.increment(orderProducts.commissionAmt!)   
+          'totalTransactionAmt':
+              FieldValue.increment(orderProducts.finalAmount!),
+          'totalCommissionPending':
+              FieldValue.increment(orderProducts.commissionAmt!)
         });
 
         if (orderProducts.paymentType == 'Online') {
           batch.update(transactionDoc, {
-            'onlinePayment':FieldValue.increment(orderProducts.finalAmount ?? 0)
+            'onlinePayment':
+                FieldValue.increment(orderProducts.finalAmount ?? 0)
           });
         } else {
           batch.update(transactionDoc, {
-            'offlinePayment':FieldValue.increment(orderProducts.finalAmount ?? 0)
+            'offlinePayment':
+                FieldValue.increment(orderProducts.finalAmount ?? 0)
           });
         }
         batch.update(pharmacyDoc, {'dayTransaction': formattedDate});
@@ -174,7 +184,8 @@ class IOrderImpl implements IOrderFacade {
         if (dayTransactionDate == formattedDate) {
           batch.update(dayTransactionDoc, {
             'totalAmount': FieldValue.increment(orderProducts.finalAmount ?? 0),
-            'commission': FieldValue.increment(orderProducts.commissionAmt ?? 0),
+            'commission':
+                FieldValue.increment(orderProducts.commissionAmt ?? 0),
             'offlinePayment': orderProducts.paymentType != 'Online'
                 ? FieldValue.increment(orderProducts.finalAmount ?? 0)
                 : FieldValue.increment(0),
@@ -203,17 +214,23 @@ class IOrderImpl implements IOrderFacade {
   bool noMoreData = false;
   @override
   FutureResult<List<PharmacyOrderModel>> getCompletedOrderDetails(
-      {required String pharmacyId, required int limit}) async {
+      {required String pharmacyId,
+      required int initiallimit,
+      required String? searchPhoneNumber}) async {
     try {
       if (noMoreData) return right([]);
+         int limit = lastDoc == null ? initiallimit : 4;
       Query query = _firebaseFirestore
           .collection(FirebaseCollections.pharmacyOrder)
-          .orderBy('createdAt', descending: true)
+          .orderBy('completedAt', descending: true)
           .where(Filter.and(
             Filter('pharmacyId', isEqualTo: pharmacyId),
             Filter('orderStatus', isEqualTo: 2),
           ));
-
+      if (searchPhoneNumber != null && searchPhoneNumber.isNotEmpty) {
+        query =
+            query.where('userDetails.phoneNo', isEqualTo: searchPhoneNumber);
+      }
       if (lastDoc != null) {
         query = query.startAfterDocument(lastDoc!);
         log(lastDoc!.id.toString());
@@ -245,20 +262,22 @@ class IOrderImpl implements IOrderFacade {
 
 /* ------------------------- CANCELLED ORDER SECTION ------------------------ */
   @override
-  FutureResult<List<PharmacyOrderModel>> getCancelledOrderDetails({
-    required String pharmacyId,
-  }) async {
+  FutureResult<List<PharmacyOrderModel>> getCancelledOrderDetails(
+      {required String pharmacyId, required String? searchPhoneNumber}) async {
     try {
       final limit = lastDoc == null ? 6 : 3;
       if (noMoreData) return right([]);
       Query query = _firebaseFirestore
           .collection(FirebaseCollections.pharmacyOrder)
-          .orderBy('createdAt', descending: true)
+          .orderBy('rejectedAt', descending: true)
           .where(Filter.and(
             Filter('pharmacyId', isEqualTo: pharmacyId),
             Filter('orderStatus', isEqualTo: 3),
           ));
-
+      if (searchPhoneNumber != null && searchPhoneNumber.isNotEmpty) {
+        query =
+            query.where('userDetails.phoneNo', isEqualTo: searchPhoneNumber);
+      }
       if (lastDoc != null) {
         query = query.startAfterDocument(lastDoc!);
         log(lastDoc!.id.toString());

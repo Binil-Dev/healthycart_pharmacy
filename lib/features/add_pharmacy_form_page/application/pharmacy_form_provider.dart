@@ -23,7 +23,6 @@ import 'package:page_transition/page_transition.dart';
 class PharmacyFormProvider extends ChangeNotifier {
   PharmacyFormProvider(this._iFormFeildFacade);
   final IFormFeildFacade _iFormFeildFacade;
-
 //Image section
   String? imageUrl;
   File? imageFile;

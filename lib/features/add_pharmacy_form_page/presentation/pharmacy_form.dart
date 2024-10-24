@@ -187,7 +187,7 @@ class PharmacyFormScreen extends StatelessWidget {
                               TextfieldWidget(
                                 hintText: 'Enter email id',
                                 textInputAction: TextInputAction.next,
-                                keyboardType: TextInputType.name,
+                                keyboardType: TextInputType.emailAddress,
                                 validator: BValidator.validateEmail,
                                 controller:
                                     pharmacyProvider.pharmacyEmailController,

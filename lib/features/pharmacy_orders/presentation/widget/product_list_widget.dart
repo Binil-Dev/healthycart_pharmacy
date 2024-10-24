@@ -6,6 +6,7 @@ import 'package:healthycart_pharmacy/features/pharmacy_orders/application/provid
 import 'package:healthycart_pharmacy/features/pharmacy_orders/domain/model/product_quantity_model.dart';
 import 'package:healthycart_pharmacy/features/pharmacy_orders/presentation/widget/quantity_container.dart';
 import 'package:healthycart_pharmacy/utils/constants/colors/colors.dart';
+import 'package:healthycart_pharmacy/utils/constants/image/image.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailsWidget extends StatelessWidget {
@@ -36,8 +37,13 @@ class ProductDetailsWidget extends StatelessWidget {
               ),
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(56),
-                  child: CustomCachedNetworkImage(
-                      image:  productData.productData?.productImage?.first ?? '')),
+                  child: (productData.productData?.productImage != null)
+                            ? CustomCachedNetworkImage(
+                                image: productData.productData?.productImage?.first ??
+                                    '',
+                                fit: BoxFit.contain,
+                              )
+                            : Image.asset(BImage.roundLogo)),
             ),
             Flexible(
               flex: 4,
