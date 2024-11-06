@@ -14,10 +14,11 @@ class OpenStritMapServices {
     required String latitude,
     required String longitude,
   }) async {
+     final headers = {'User-Agent': 'HealthyCart Pharmacy'};
     final url = Uri.parse(
       'https://nominatim.openstreetmap.org/reverse?format=json&lat=$latitude&lon=$longitude',
     );
-    final response = await http.get(url);
+    final response = await http.get(url,headers:headers);
     if (response.statusCode == 200) {
       final openStreetMap = OpentreetMapModel.fromMap(
         json.decode(response.body) as Map<String, dynamic>,
@@ -57,10 +58,11 @@ class OpenStritMapServices {
   static Future<List<PlaceMark>> searchPlaces({
     required String input,
   }) async {
+     final headers = {'User-Agent': 'HealthyCart Pharmacy'};
     final url = Uri.parse(
       'https://nominatim.openstreetmap.org/search.php?q=$input&format=json&addressdetails=1&limit=20&countrycodes=in',
     );
-    final response = await http.get(url);
+    final response = await http.get(url,headers:headers);
     if (response.statusCode == 200) {
       final placeMarks = <PlaceMark>[];
       final data = json.decode(response.body) as List<dynamic>;
